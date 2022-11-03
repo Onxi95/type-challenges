@@ -11,7 +11,7 @@ type cases = [
 
 
 // ============= Your Code Here =============
-type Unique<T extends unknown[]> = T extends [infer First, ...infer Second] ? T : T
+type Unique<T extends unknown[]> = T extends [infer First, ...infer Second] ? Includes<F> : T
 
 type Includes<U, T extends unknown[]> = T extends [infer First, ...infer Second] ?
   Equal<First, U> extends true
