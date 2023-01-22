@@ -4,4 +4,6 @@ import type { Equal, Expect, NotAny } from "./test-utils";
 type cases = [Expect<NotAny<HelloWorld>>, Expect<Equal<HelloWorld, string>>];
 
 // ============= Your Code Here =============
-type HelloWorld = "hello world!"; // expected to be a string
+type HelloWorld = string // expected to be a string
+
+type test = Equal<HelloWorld, string>
