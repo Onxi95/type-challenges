@@ -17,11 +17,6 @@ type cases = [
 
 
 // ============= Your Code Here =============
-type All<T extends unknown[], U> = T['length'] extends 0 ? true : 
-T extends [infer First, ...infer Rest]
-  ? U extends First
-    ? All<Rest, U>
-    : false
-  : false
+type All<T extends unknown[], U> = T[number] extends U ? true : false;
 
 type Test1 = All<[1, 1, 2], 1>
