@@ -17,3 +17,6 @@ type cases = [
 // ============= Your Code Here =============
 declare function PromiseAll<T extends unknown[]>(values: readonly [...T]): Promise<{[P in keyof T]: Awaited<T[P]>}>
 
+type Test1 = Awaited<1>
+type Test2 = Awaited<number | string>
+type Test3 = Awaited<typeof Promise<[number, 3]>>
