@@ -15,3 +15,10 @@ type LengthOfString<
 > = S extends `${infer First}${infer Rest}`
     ? LengthOfString<Rest, [First, ...R]>
     : R["length"];
+
+
+type L<T extends string> = T extends `${infer First}${infer Rest}` ? First : "u"
+
+type test2 = L<"hello">
+
+type test = LengthOfString<"">
