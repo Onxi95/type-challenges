@@ -20,3 +20,5 @@ type KebabCase<S extends string> = S extends `${infer R}${infer Rest}`
     ? `${Lowercase<R>}${KebabCase<Rest>}`
     : `${Lowercase<R>}-${KebabCase<Rest>}`
   : S;
+
+type test1 = Uncapitalize<"HelloWorld123HERE">
