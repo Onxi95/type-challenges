@@ -17,7 +17,15 @@ type cases = [
 
 type ConvertStringToArray<T extends string> =
     T extends `${infer First}${infer Second}`
-        ? [First, ConvertStringToArray<Second>][number]
-        : never;
+    ? [First, ConvertStringToArray<Second>][number]
+    : never;
 
 type StringToUnion<T extends string> = ConvertStringToArray<T>;
+
+
+type test1 = StringToUnion<"t">
+type ConvertStringToArray2<T extends string> = T extends `${infer First}${infer Second}`
+    ? First | ConvertStringToArray2<Second>
+    : never
+
+type test2 = ConvertStringToArray2<"hello">
