@@ -33,10 +33,11 @@ const keys: ControlKeys = 'c'
 type ParsePrintFormat<T extends string, Memory extends unknown[] = []> =
   T extends `${infer _}%${infer ControlKey}${infer Last}`
   ? ControlKey extends ControlKeys
-    ? ParsePrintFormat<Last, [...Memory, ControlsMap[ControlKey]]>
-    : never
+  ? ParsePrintFormat<Last, [...Memory, ControlsMap[ControlKey]]>
+  : ParsePrintFormat<Last, Memory>
   : Memory
 
 type Test1 = ParsePrintFormat<'The result is %d.'>
 type Test2 = ParsePrintFormat<'%d'>
 type Test3 = ParsePrintFormat<'Hello %s: score is %d.'>
+type Test4 = ParsePrintFormat<'The result is %q.'>
