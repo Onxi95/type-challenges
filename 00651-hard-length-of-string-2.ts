@@ -32,7 +32,8 @@ type cases = [
 
 
 // ============= Your Code Here =============
-type LengthOfString<S extends string, Counter = 0> = S[number]
+type LengthOfString<S extends string, Counter extends unknown[] = []> =
+  S extends `${infer _}${infer Rest}` ? LengthOfString<Rest, [...Counter, 1]> : Counter['length']
 
 type Test1 = LengthOfString<'123'>
 
