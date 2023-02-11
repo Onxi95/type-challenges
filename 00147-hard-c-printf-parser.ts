@@ -26,8 +26,7 @@ type ControlsMap = {
   p: 'pointer'
 }
 
-type SpecialChars = keyof ControlsMap;
-type ControlsKeys = SpecialChars;
+type ControlsKeys = keyof ControlsMap;
 
 const keys: ControlsKeys = 'c'
 
