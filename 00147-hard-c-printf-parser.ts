@@ -26,9 +26,17 @@ type ControlsMap = {
   p: 'pointer'
 }
 
-type ControlsKeys = keyof ControlsMap;
+type ControlKeys = keyof ControlsMap;
 
-const keys: ControlsKeys = 'c'
+const keys: ControlKeys = 'c'
 
-type ParsePrintFormat<T extends string, Memory extends unknown = []> =
-  T extends `` ? true : false
+type ParsePrintFormat<T extends string, Memory extends unknown[] = []> =
+  T extends `${infer _}%${infer ControlKey}${infer Last}`
+  ? ControlKey extends ControlKeys
+    ? ParsePrintFormat<Last, [...Memory, ControlsMap[ControlKey]]>
+    : never
+  : Memory
+
+type Test1 = ParsePrintFormat<'The result is %d.'>
+type Test2 = ParsePrintFormat<'%d'>
+type Test3 = ParsePrintFormat<'Hello %s: score is %d.'>
