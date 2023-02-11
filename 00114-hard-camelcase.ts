@@ -16,7 +16,9 @@ type cases = [
 // ============= Your Code Here =============
 type CamelCase<S extends string> =
   S extends `${infer First}_${infer Second}`
-  ? CamelCase<`${First}${Capitalize<Second>}`>
-  : S
+  ? `${Lowercase<First>}${Capitalize<CamelCase<Second>>}`
+  : Lowercase<S>
 
 type Test1 = CamelCase<'foo_bar_hello_world'>
+type Test2 = CamelCase<'HELLO_WORLD_WITH_TYPES'>
+type Test3 = CamelCase<'FOOBAR'>
