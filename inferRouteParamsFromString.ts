@@ -43,3 +43,4 @@ const Test6: test6 = (params) => `/hello/${params.id}/${params.otherId}`;
 const Test7: test7 = ({ id }) => `/hello/${id}`;
 const Test8: test8 = ({ id }) => `/hello/${id}`;
 const Test9: test9 = '/admin/test/hello';
+const Test10: test10 = ({id}) => `/admin/test/hello/${id}`;
