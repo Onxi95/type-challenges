@@ -7,11 +7,11 @@ export type withoutId = '/admin/test/hello';
 
 type InferRouteParamsFromString<T extends string> =
   T extends `${infer First}${`{${infer Param}}`}${infer Second}`
-    ?
-        | Param
-        | InferRouteParamsFromString<First>
-        | InferRouteParamsFromString<Second>
-    : never;
+  ?
+  | Param
+  | InferRouteParamsFromString<First>
+  | InferRouteParamsFromString<Second>
+  : never;
 
 type test1 = InferRouteParamsFromString<twoIds>;
 type test2 = InferRouteParamsFromString<oneIdInside>;
@@ -43,4 +43,4 @@ const Test6: test6 = (params) => `/hello/${params.id}/${params.otherId}`;
 const Test7: test7 = ({ id }) => `/hello/${id}`;
 const Test8: test8 = ({ id }) => `/hello/${id}`;
 const Test9: test9 = '/admin/test/hello';
-const Test10: test10 = ({id}) => `/admin/test/hello/${id}`;
+const Test10: test10 = ({ id }) => `/admin/test/hello/${id}`;
