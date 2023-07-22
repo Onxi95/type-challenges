@@ -23,7 +23,7 @@ type cases = [
 // ============= Your Code Here =============
 type SplitByAmpersand<T extends string, Result extends string[] = []> =
   T extends `${infer First}&${infer Rest}`
-  ? SplitByAmpersand<Rest, [First, ...Result]>
+  ? [First, ...SplitByAmpersand<Rest>]
   : T extends ''
   ? []
   : [...Result, T]
@@ -92,37 +92,3 @@ type test13 = ParseQueryString<'k1=v1&k1=v2&k1=v1'>
 type test14 = RemoveDuplicatesFromArray<['a', 'b', 'b', 'c', true, true]>
 type test15 = ParseQueryString<'k1=v1&k2=v2&k1=v2&k1=v3'>
 type test16 = ParseQueryString<'k1=v1&k2=v2&k1=v2&k1=v3'>
-
-type FindValuesInTupleArrayTest<T extends KeyValueTuple[],
-  Key extends string | number | symbol,
-  Result extends Array<string | true> = []>
-  = T extends [infer First extends KeyValueTuple, ...infer Rest extends KeyValueTuple[]] ?
-  First[0] extends Key
-  ? FindValuesInTupleArrayTest<Rest, Key, [...Result, First[1]]>
-  : FindValuesInTupleArrayTest<Rest, Key, [...Result]>
-  : Result
-
-
-type MapUnionToDictTest<T extends string[],
-  Keys extends string = GetKeys<T>,
-  Dict extends Record<string, string[]> = { [Key in Keys]: [] }> =
-  { [Key in keyof Dict]: FindValuesInTupleArrayTest<MapParamsToArray<T>, Key> }
-
-type test17 = MapUnionToDictTest<SplitByAmpersand<'k1=v1&k2=v2&k1=v2&k1=v3'>>
-type test18 = MapParamsToArray<SplitByAmpersand<'k1=v1&k2=v2&k1=v2&k1=v3'>>
-type test19 = FindValuesInTupleArrayTest<MapParamsToArray<SplitByAmpersand<'k1=v1&k2=v2&k1=v2&k1=v3'>>, 'k1'>
-
-type MapParamsToArrayTest<T extends string[]> =
-  T extends [infer First extends string, ...infer Rest extends string[]]
-  ? [SplitByEqual<First>, ...MapParamsToArrayTest<Rest>]
-  : [];
-
-type SplitByAmpersandTest<T extends string, Result extends string[] = []> =
-  T extends `${infer First}&${infer Rest}`
-  ? [First, ...SplitByAmpersandTest<Rest>]
-  : T extends ''
-  ? []
-  : [...Result, T]
-
-type test19 = SplitByAmpersandTest<'k1=v1&k2=v2&k1=v2&k1=v3'>
-type test20 = MapParamsToArrayTest<SplitByAmpersand<'k1=v1&k2=v2&k1=v2&k1=v3'>>
