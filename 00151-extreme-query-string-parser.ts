@@ -119,10 +119,10 @@ type MapParamsToArrayTest<T extends string[]> =
 
 type SplitByAmpersandTest<T extends string, Result extends string[] = []> =
   T extends `${infer First}&${infer Rest}`
-  ? SplitByAmpersand<Rest, [First, ...Result]>
+  ? [First, ...SplitByAmpersandTest<Rest>]
   : T extends ''
   ? []
-  : [T, ...Result]
+  : [...Result, T]
 
 type test19 = SplitByAmpersandTest<'k1=v1&k2=v2&k1=v2&k1=v3'>
 type test20 = MapParamsToArrayTest<SplitByAmpersand<'k1=v1&k2=v2&k1=v2&k1=v3'>>
