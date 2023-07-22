@@ -51,14 +51,24 @@ type FindValuesInTupleArray<T extends KeyValueTuple[],
   : FindValuesInTupleArray<Rest, Key, [...Result]>
   : Result
 
+type ArrType = string | true
+type RemoveDuplicatesFromArray<
+  T extends Array<ArrType>,
+  Result extends Array<ArrType> = []> = T extends [infer First extends ArrType, ...infer Rest extends ArrType[]]
+  ? First extends Result[number] ? RemoveDuplicatesFromArray<Rest, Result> : RemoveDuplicatesFromArray<Rest, [...Result, First]>
+  : Result
+
+type ReturnItemIfSingle<T extends string[]> = T['length'] extends 1 ? T[0] : T;
+
 type MapUnionToDict<T extends string[],
   Keys extends string = GetKeys<T>,
   Dict extends Record<string, string[]> = { [Key in Keys]: [] }> =
-  { [Key in keyof Dict]: FindValuesInTupleArray<MapParamsToArray<T>, Key> }
-
+  { [Key in keyof Dict]: ReturnItemIfSingle<RemoveDuplicatesFromArray<FindValuesInTupleArray<MapParamsToArray<T>, Key>>> }
 
 type ParseQueryString<T extends string> =
   SplitByAmpersand<T>['length'] extends 0 ? {} : MapUnionToDict<SplitByAmpersand<T>>
+
+
 
 type test1 = ParseQueryString<'k1=v1&k1=v2'>
 
@@ -72,8 +82,12 @@ type test6 = SplitByEqual<'k1'>
 type test7 = MapParamsToArray<SplitByAmpersand<'k1=v1&k1=v2&k2=v3'>>
 
 type test8 = GetKeys<SplitByAmpersand<'k1=v1&k1=v2&k2=v3'>>
-type test9 = MapUnionToDict<SplitByAmpersand<'k1=v1&k1=v2&k2=v3&k1'>>
+type test9 = MapUnionToDict<SplitByAmpersand<'k1=v1&k1=v2&k2=v3&k1&k1=v1'>>
 type test10 = Extract<[["k2", "v3"], ["k1", "v2"], ["k1", "v1"], ["k1", true]][number], ["k1", any]>
 type test11 = FindValuesInTupleArray<[['hi', 'hello']], 'hi'>
 
 type test12 = ParseQueryString<'k1&k1=v1'>
+type test13 = ParseQueryString<'k1=v1&k1=v2&k1=v1'>
+
+type test14 = RemoveDuplicatesFromArray<['a', 'b', 'b', 'c', true, true]>
+type test15 = ParseQueryString<'k1=v1&k2=v2&k1=v2&k1=v3'>
