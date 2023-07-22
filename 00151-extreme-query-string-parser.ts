@@ -43,22 +43,22 @@ type MapParamsToArray<T extends string[]> =
 type KeyValueTuple = [string, string | true]
 
 type FindValuesInTupleArray<T extends KeyValueTuple[],
-  Key extends string,
+  Key extends string | number | symbol,
   Result extends Array<string | true> = []>
   = T extends [infer First extends KeyValueTuple, ...infer Rest extends KeyValueTuple[]] ?
   First[0] extends Key
-  ? FindValuesInTupleArray<Rest, Key, [First[1], ...Result]>
+  ? FindValuesInTupleArray<Rest, Key, [...Result, First[1]]>
   : FindValuesInTupleArray<Rest, Key, [...Result]>
   : Result
 
 type MapUnionToDict<T extends string[],
   Keys extends string = GetKeys<T>,
   Dict extends Record<string, string[]> = { [Key in Keys]: [] }> =
-  { [Key in keyof Dict]: MapParamsToArray<T> }
+  { [Key in keyof Dict]: FindValuesInTupleArray<MapParamsToArray<T>, Key> }
 
 
-type ParseQueryString<T extends string, Dict extends Record<string, string[]> = {}> =
-  SplitByAmpersand<T>['length'] extends 0 ? Dict : MapParamsToArray<SplitByAmpersand<T>>
+type ParseQueryString<T extends string> =
+  SplitByAmpersand<T>['length'] extends 0 ? {} : MapUnionToDict<SplitByAmpersand<T>>
 
 type test1 = ParseQueryString<'k1=v1&k1=v2'>
 
@@ -75,3 +75,5 @@ type test8 = GetKeys<SplitByAmpersand<'k1=v1&k1=v2&k2=v3'>>
 type test9 = MapUnionToDict<SplitByAmpersand<'k1=v1&k1=v2&k2=v3&k1'>>
 type test10 = Extract<[["k2", "v3"], ["k1", "v2"], ["k1", "v1"], ["k1", true]][number], ["k1", any]>
 type test11 = FindValuesInTupleArray<[['hi', 'hello']], 'hi'>
+
+type test12 = ParseQueryString<'k1&k1=v1'>
