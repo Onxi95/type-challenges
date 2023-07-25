@@ -11,11 +11,9 @@ type cases = [
 
 // ============= Your Code Here =============
 type TupleToNestedObject<T extends string[], U> =
-  T['length'] extends 0
-  ? U
-  : T extends [infer First extends string, ...infer Rest extends string[]]
+  T extends [infer First extends string, ...infer Rest extends string[]]
   ? Record<First, TupleToNestedObject<Rest, U>>
-  : never;
+  : U;
 
 type test1 = TupleToNestedObject<[], boolean>
 type test2 = TupleToNestedObject<['a', 'b', 'c'], boolean>
