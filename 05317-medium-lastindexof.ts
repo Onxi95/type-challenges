@@ -16,7 +16,7 @@ type LastIndexOf<T extends unknown[],
   CurrentIndex extends any[] = [],
   LastIndex extends number = -1> =
   T extends [infer First, ...infer Rest]
-  ? U extends First
+  ? Equal<First, U> extends true
   ? LastIndexOf<Rest, U, [...CurrentIndex, 0], CurrentIndex['length']>
   : LastIndexOf<Rest, U, [...CurrentIndex, 0], LastIndex>
   : LastIndex
