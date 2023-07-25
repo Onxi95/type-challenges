@@ -12,11 +12,10 @@ type cases = [
 
 
 // ============= Your Code Here =============
-// type IsTuple<T> = number extends T['length'] ? false : true;
 type IsTuple<T> =
   [T] extends [never]
   ? false :
-  T extends unknown[] | readonly unknown[]
+  T extends readonly any[]
   ? number extends T['length']
   ? false
   : true
