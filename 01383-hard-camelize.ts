@@ -29,10 +29,18 @@ type cases = [
 
 type Camelize<T> = any
 
-type CamelizeStr<T extends string> = T extends `${infer First}_${infer Rest}`
-  ? CamelizeStr<`${First}${Capitalize<Rest>}`>
+type CamelizeKey<T extends string | number | symbol> = T extends `${infer First}_${infer Rest}`
+  ? CamelizeKey<`${First}${Capitalize<Rest>}`>
   : T
 
-type test1 = CamelizeStr<'some_prop'>
-type test2 = CamelizeStr<'some'>
-type test3 = CamelizeStr<'some_'>
+type CamelizeObjAttrs<T extends Record<string, unknown>> = {
+  [Key in keyof T as CamelizeKey<Key>]: T[Key] }
+
+type test1 = CamelizeKey<'some_prop'>
+type test2 = CamelizeKey<'some'>
+type test3 = CamelizeKey<'some_'>
+
+type test4 = CamelizeObjAttrs<{
+  some_prop: string,
+  some_other_prop: number;
+}>
