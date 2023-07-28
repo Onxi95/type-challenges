@@ -18,4 +18,10 @@ type Zip<T extends unknown[], U extends unknown[], Result extends unknown[][] = 
   : Result
   : Result;
 
+type BetterZip<T extends unknown[], U extends unknown[], Result extends unknown[] = []> =
+  Result['length'] extends T['length'] | U['length']
+  ? Result
+  : BetterZip<T, U, [...Result, [T[Result['length']], U[Result['length']]]]>
+
 type test1 = Zip<[1, 2], [true, false]>
+type test2 = BetterZip<[1, 2], [true, false]>
