@@ -24,22 +24,15 @@ type Data = {
 
 
 // ============= Your Code Here =============
-type GetProperties<T extends string> = T extends `${infer First}.${infer Rest}`
-  ? [First, ...GetProperties<Rest>]
-  : [T]
-
-type Get<T extends Record<string, unknown>, K extends string, Props extends string[] = GetProperties<K>> =
-  K extends keyof T
-  ? T[K]
-  : Props extends [infer First extends string, ...infer Rest extends string[]]
-  ? T[First] extends Record<string, unknown> ? Get<T[First], K, Rest>
-  : First extends keyof T
-  ? T[First]
+type Get<T, K extends string> =
+  K extends keyof T ? T[K]
+  : K extends `${infer First}.${infer Rest}`
+  ? First extends keyof T
+  ? Get<T[First], Rest>
   : never
-  : T
-
-type test1 = GetProperties<'foo'>
-type test2 = GetProperties<'foo.bar.count'>
+  : K extends keyof T
+  ? T[K]
+  : never
 
 type test3 = Get<Data, 'foo.bar.count'>
 type test4 = Get<Data, 'foo.bar'>
