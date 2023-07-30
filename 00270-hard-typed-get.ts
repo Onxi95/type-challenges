@@ -44,4 +44,4 @@ type test2 = GetProperties<'foo.bar.count'>
 type test3 = Get<Data, 'foo.bar.count'>
 type test4 = Get<Data, 'foo.bar'>
 type test5 = Get<Data, 'foo.baz'>
-type test5 = Get<Data, 'no.existed'>
+type test6 = Get<Data, 'no.existed'>
