@@ -16,10 +16,13 @@ type GetFormatters<T extends string> = T extends `${string}%${infer Formatter}${
   ? Formatter extends "%" ? GetFormatters<Rest> : [Formatter, ...GetFormatters<Rest>]
   : []
 
+type Mapper = {
+  s: string;
+  d: number;
+}
 
 type Format<T extends string, Formatters = GetFormatters<T>> = Formatters extends [infer First, ...infer Rest]
-  ? First extends "d" ? (d1: number) => Format<T, Rest>
-  : (s1: string) => Format<T, Rest>
+  ? First extends keyof Mapper ? (param: Mapper[First]) => Format<T, Rest> : never
   : string
 
 
