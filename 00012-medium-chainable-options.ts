@@ -48,8 +48,9 @@ type Chainable<Memory = {}> = {
   option<Key extends string, Value extends any>(
     key: Key,
     value: Value
-  ): Chainable<Memory & Record<Key, Value>>;
+  ): Chainable<Chainable<Omit<Memory, Key>> & Record<Key, Value>>;
   get(): Memory;
 };
 
 type test1 = typeof result1;
+type test2 = typeof result3;
