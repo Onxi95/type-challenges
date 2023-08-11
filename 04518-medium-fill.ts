@@ -21,15 +21,20 @@ type Fill<
   N,
   Start extends number = 0,
   End extends number = T["length"],
-  Result extends unknown[] = []
+  Result extends unknown[] = [],
+  ShouldStartReplacing extends boolean = Result["length"] extends Start
+    ? true
+    : false
 > = Result["length"] extends End
   ? T
   : T extends [infer First, ...infer Rest]
-  ? Result["length"] extends Start
-    ? [N, ...Fill<Rest, N, Start, End, Result>]
-    : [First, ...Fill<Rest, N, Start, End, Result>]
-  : Result;
+  ? ShouldStartReplacing extends false
+    ? [First, ...Fill<Rest, N, Start, End, [...Result, null]>]
+    : [N, ...Fill<Rest, N, Start, End, [...Result, null], ShouldStartReplacing>]
+  : T;
 
 type test1 = Fill<[1, 2, 3], true>;
 type test2 = Fill<[1, 2, 3], 0, 0, 0>;
 type test3 = Fill<[1, 2, 3], true, 10, 20>;
+type test4 = Fill<[1, 2, 3], true, 1, 3>;
+type test5 = Fill<[1, 2, 3], true, 0, 10>;
