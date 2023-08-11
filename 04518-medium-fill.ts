@@ -25,8 +25,11 @@ type Fill<
 > = Result["length"] extends End
   ? T
   : T extends [infer First, ...infer Rest]
-  ? Fill<Rest, N, Start, End, [...Result, N]>
+  ? Result["length"] extends Start
+    ? [N, ...Fill<Rest, N, Start, End, Result>]
+    : [First, ...Fill<Rest, N, Start, End, Result>]
   : Result;
 
 type test1 = Fill<[1, 2, 3], true>;
 type test2 = Fill<[1, 2, 3], 0, 0, 0>;
+type test3 = Fill<[1, 2, 3], true, 10, 20>;
