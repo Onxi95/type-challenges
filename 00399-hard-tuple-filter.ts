@@ -25,10 +25,14 @@ type cases = [
 
 // ============= Your Code Here =============
 type FilterOut<T extends any[], F> = T extends [infer First, ...infer Rest]
-  ? Equal<First, F> extends true
+  ? [First] extends [F]
     ? FilterOut<Rest, F>
     : [First, ...FilterOut<Rest, F>]
   : T;
 
 type test1 = FilterOut<[never], never>;
 type test2 = FilterOut<["a", never], never>;
+type test3 = FilterOut<
+  [never, 1, "a", undefined, false, null],
+  never | null | undefined
+>;
