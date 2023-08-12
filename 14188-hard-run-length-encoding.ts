@@ -34,6 +34,22 @@ type RepeatToLength<
 
 type testRepeatToLength1 = RepeatToLength<"A", "3">;
 
+// TODO: analyse what it does :P
+// https://github.com/type-challenges/type-challenges/issues/14254
+type DecodeHelper<
+  S extends string,
+  L extends string = ""
+> = S extends `${infer F}${infer R}`
+  ? F extends `${number}`
+    ? DecodeHelper<R, `${L}${F}`>
+    : `${Repeat<F, L extends "" ? "1" : L>}${DecodeHelper<R, "">}`
+  : "";
+type Repeat<
+  S extends string,
+  L extends string,
+  C extends 1[] = []
+> = `${C["length"]}` extends L ? "" : `${S}${Repeat<S, L, [1, ...C]>}`;
+
 namespace RLE {
   export type Encode<
     S extends string,
@@ -61,11 +77,7 @@ namespace RLE {
           }
         >
     : ConcatValuesFromAccumulator<Accumulator>;
-  export type Decode<S extends string> = S extends `${infer First}${infer Rest}`
-    ? `${First}` extends `${number}`
-      ? First
-      : never
-    : S;
+  export type Decode<S extends string> = DecodeHelper<S>;
 }
 
 // 3AB2C6XY
