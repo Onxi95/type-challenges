@@ -18,6 +18,22 @@ type ConcatValuesFromAccumulator<T extends AccumulatorType> =
     ? ""
     : T["count"]["length"]}${T["current"]}`;
 
+type RepeatToLength<
+  Letter extends string,
+  NumberAsString extends string,
+  Result extends string = "",
+  Counter extends any[] = []
+> = NumberAsString extends `${Counter["length"]}`
+  ? Result
+  : RepeatToLength<
+      Letter,
+      NumberAsString,
+      `${Letter}${Result}`,
+      [...Counter, any]
+    >;
+
+type testRepeatToLength1 = RepeatToLength<"A", "3">;
+
 namespace RLE {
   export type Encode<
     S extends string,
@@ -45,8 +61,13 @@ namespace RLE {
           }
         >
     : ConcatValuesFromAccumulator<Accumulator>;
-  export type Decode<S extends string> = any;
+  export type Decode<S extends string> = S extends `${infer First}${infer Rest}`
+    ? `${First}` extends `${number}`
+      ? First
+      : never
+    : S;
 }
 
 // 3AB2C6XY
 type test1 = RLE.Encode<"AAABCCXXXXXXY">;
+type test2 = RLE.Decode<"3AB2C6XY">;
