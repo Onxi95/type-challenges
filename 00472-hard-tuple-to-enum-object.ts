@@ -74,8 +74,18 @@ type cases = [
 ];
 
 // ============= Your Code Here =============
+
+type MapToKeys<T extends ReadonlyArray<unknown>> = T extends readonly [
+  infer First,
+  ...infer Rest
+]
+  ? MapToKeys<Rest> | Rest["length"]
+  : never;
+
 type Enum<T extends readonly string[], N extends boolean = false> = {
-  readonly [Key in T[number] as Capitalize<Key>]: Key;
+  readonly [Key in MapToKeys<T> as Capitalize<T[Key]>]: N extends true
+    ? Key
+    : T[Key];
 };
 
 type test1 = Enum<typeof OperatingSystem>;
@@ -87,3 +97,6 @@ type test2 = Equal<
     readonly Linux: "Linux";
   }
 >;
+type test3 = keyof [1, 2, 3];
+const Test3: test3 = "0";
+type test4 = MapToKeys<typeof OperatingSystem>;
