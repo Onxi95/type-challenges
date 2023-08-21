@@ -38,7 +38,9 @@ type PartialByKeys<T, K extends keyof T = keyof T> = Omit<
   {
     [Key in K]?: T[Key];
   } & {
-    [Key in Exclude<keyof T, K>]: T[Key];
+    [Key in keyof Omit<T, K>]: T[Key];
   },
   never
 >;
+
+type test2 = Omit<{ hello: "hi"; hi: "hello" }, "hello">;
