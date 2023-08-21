@@ -34,10 +34,11 @@ type Intersection<T> = {
   [Key in keyof T]: T[Key];
 };
 
-type PartialByKeys<T, K extends keyof T = keyof T> = Intersection<
+type PartialByKeys<T, K extends keyof T = keyof T> = Omit<
   {
     [Key in K]?: T[Key];
   } & {
     [Key in Exclude<keyof T, K>]: T[Key];
-  }
+  },
+  never
 >;
