@@ -11,17 +11,12 @@ type cases = [
 type Without<
   T extends number[],
   U extends number | number[],
-  Current extends number[] = T,
-  Union = U extends number[] ? U[number] : U,
-  Results extends number[] = [],
-  Counter extends any[] = []
-> = Counter["length"] extends T["length"]
-  ? Results
-  : Current extends [infer First extends number, ...infer Rest extends number[]]
+  Union = U extends number[] ? U[number] : U
+> = T extends [infer First, ...infer Rest extends number[]]
   ? First extends Union
-    ? Without<T, U, Rest, Union, Results, [...Counter, 1]>
-    : Without<T, U, Rest, Union, [...Results, First], [...Counter, 1]>
-  : Results;
+    ? Without<Rest, U, Union>
+    : [First, ...Without<Rest, U, Union>]
+  : [];
 
 type test1 = Without<[1, 2], [1]>;
 type test2 = Without<[1, 2, 4, 1, 5], [1, 2]>;
