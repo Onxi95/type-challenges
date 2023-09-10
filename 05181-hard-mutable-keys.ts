@@ -20,8 +20,20 @@ type MutableKeys<T> = keyof {
     : Key]: Key;
 };
 
+type MutableKeys2<T> = keyof {
+  -readonly [Key in keyof T as Equal<
+    Pick<T, Key>,
+    Readonly<Pick<T, Key>>
+  > extends true
+    ? never
+    : Key]: Key;
+};
+
 type test1 = MutableKeys<{ a: number; readonly b: string }>;
 type test2 = MutableKeys<{ a: undefined; readonly b: undefined }>;
-
-type test = { readonly a: "a" };
-type testPick = Pick<test, "a">;
+type test3 = MutableKeys<{
+  a: undefined;
+  readonly b?: undefined;
+  c: string;
+  d: null;
+}>;
