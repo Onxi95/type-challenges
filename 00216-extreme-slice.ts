@@ -37,23 +37,28 @@ type GetFirstNItems<
   ? GetFirstNItems<Rest, N, [...Result, First]>
   : Result;
 
+type SkipFirstItemInArray<Arr extends unknown[]> = Arr extends [
+  infer _,
+  ...infer Rest
+]
+  ? Rest
+  : Arr;
+
 type OffsetArrayBy<
   Arr extends unknown[],
   OffsetIdx extends number,
   Result extends unknown[] = [],
   Memory extends unknown[] = []
 > = Memory["length"] extends OffsetIdx
-  ? Result
+  ? SkipFirstItemInArray<Result>
   : Arr extends [infer First, ...infer Rest]
-  ? true
-  : Result;
+  ? OffsetArrayBy<Rest, OffsetIdx, [First, ...Rest], [...Memory, First]>
+  : SkipFirstItemInArray<Result>;
 
 type Slice<
   Arr extends unknown[],
   Start extends number = 0,
-  End extends number = Arr["length"],
-  Result extends unknown[] = [],
-  Iterator extends unknown[] = []
+  End extends number = Arr["length"]
 > = Arr extends [infer First, ...infer Rest] ? true : never;
 
 type test1 = Slice<Arr, 0, 1>;
@@ -61,4 +66,5 @@ type test1 = Slice<Arr, 0, 1>;
 type test2 = GetFirstNItems<Arr, 0>;
 type test3 = GetFirstNItems<[5, 4, 3, 2, 1], 3>;
 
-type test4 = OffsetArrayBy<Arr, 3>;
+type test4 = OffsetArrayBy<Arr, 2>;
+type test5 = OffsetArrayBy<Arr, 3>;
