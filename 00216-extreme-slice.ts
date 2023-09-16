@@ -49,7 +49,9 @@ type OffsetArrayBy<
   OffsetIdx extends number,
   Result extends unknown[] = [],
   Memory extends unknown[] = []
-> = Memory["length"] extends OffsetIdx
+> = OffsetIdx extends 0
+  ? Arr
+  : Memory["length"] extends OffsetIdx
   ? SkipFirstItemInArray<Result>
   : Arr extends [infer First, ...infer Rest]
   ? OffsetArrayBy<Rest, OffsetIdx, [First, ...Rest], [...Memory, First]>
@@ -59,7 +61,7 @@ type Slice<
   Arr extends unknown[],
   Start extends number = 0,
   End extends number = Arr["length"]
-> = Arr extends [infer First, ...infer Rest] ? true : never;
+> = OffsetArrayBy<GetFirstNItems<Arr, End>, Start>;
 
 type test1 = Slice<Arr, 0, 1>;
 
@@ -68,3 +70,8 @@ type test3 = GetFirstNItems<[5, 4, 3, 2, 1], 3>;
 
 type test4 = OffsetArrayBy<Arr, 2>;
 type test5 = OffsetArrayBy<Arr, 3>;
+
+type test6 = Slice<Arr, 0, 3>;
+type test7 = Slice<Arr, 1, 3>;
+type test8 = Slice<Arr, 0, 1>;
+type test9 = OffsetArrayBy<Arr, 0>;
