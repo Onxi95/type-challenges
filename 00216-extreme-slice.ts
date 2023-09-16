@@ -57,11 +57,21 @@ type OffsetArrayBy<
   ? OffsetArrayBy<Rest, OffsetIdx, [First, ...Rest], [...Memory, First]>
   : SkipFirstItemInArray<Result>;
 
+// https://github.com/type-challenges/type-challenges/issues/22110
+type NormalizeToNonNegativeInt<
+  Arr extends unknown[],
+  N extends number
+  // v - quite interesting
+> = `${N}` extends `-${infer P extends number}` ? Slice<Arr, P>["length"] : N;
+
 type Slice<
   Arr extends unknown[],
   Start extends number = 0,
   End extends number = Arr["length"]
-> = OffsetArrayBy<GetFirstNItems<Arr, End>, Start>;
+> = OffsetArrayBy<
+  GetFirstNItems<Arr, NormalizeToNonNegativeInt<Arr, End>>,
+  NormalizeToNonNegativeInt<Arr, Start>
+>;
 
 type test1 = Slice<Arr, 0, 1>;
 
@@ -75,3 +85,7 @@ type test6 = Slice<Arr, 0, 3>;
 type test7 = Slice<Arr, 1, 3>;
 type test8 = Slice<Arr, 0, 1>;
 type test9 = OffsetArrayBy<Arr, 0>;
+
+type test10 = NormalizeToNonNegativeInt<Arr, 5>;
+type test11 = NormalizeToNonNegativeInt<Arr, -2>;
+type test12 = NormalizeToNonNegativeInt<Arr, 0>;
