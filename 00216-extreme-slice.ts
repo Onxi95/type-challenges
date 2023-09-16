@@ -61,7 +61,7 @@ type OffsetArrayBy<
 type NormalizeToNonNegativeInt<
   Arr extends unknown[],
   N extends number
-  // v - quite interesting
+  //                                                  v - quite interesting
 > = `${N}` extends `-${infer P extends number}` ? Slice<Arr, P>["length"] : N;
 
 type Slice<
