@@ -30,7 +30,7 @@ type ControlKeys = keyof ControlsMap;
 
 const keys: ControlKeys = 'c'
 
-type ParsePrintFormat<T extends string, Memory extends unknown[] = []> =
+type ParsePrintFormat<T extends string, Memory extends string[] = []> =
   T extends `${infer _}%${infer ControlKey}${infer Last}`
   ? ControlKey extends ControlKeys
   ? ParsePrintFormat<Last, [...Memory, ControlsMap[ControlKey]]>
