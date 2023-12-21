@@ -11,12 +11,17 @@ type cases = [
 
 
 // ============= Your Code Here =============
-type Unique<T extends unknown[]> = T extends [infer First, ...infer Second] ? Includes<F> : T
-
-type Includes<U, T extends unknown[]> = T extends [infer First, ...infer Second] ?
-  Equal<First, U> extends true
+type Includes<T, U> = U extends [infer First, ...infer Rest]
+  ? Equal<First, T> extends true
   ? true
-  : Includes<U, Second>
-  : false
+  : Includes<T, Rest>
+  : false;
+
+type Unique<T, U extends any[] = []> =
+  T extends [infer First, ...infer Rest]
+  ? Includes<First, U> extends true
+  ? Unique<Rest, [...U]>
+  : Unique<Rest, [...U, First]>
+  : U
 
 type Test = Unique<[1, 1, 2, 2, 3, 3]>
