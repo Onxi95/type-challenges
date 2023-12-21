@@ -70,9 +70,6 @@ type GetCoordsTest2 = GetCoords<'bottom-center'>
 
 
 type PlaceChipAtX<CurrentRow extends string[], X extends number, Chip extends TicTacToeChip, Memory extends string[] = []> =
-    // CurrentRow extends [infer First extends TicTacToeChip, ...infer Rest extends Row]
-    // ? PlaceChipAtX<Rest, X, Chip, [...Memory, First]> 
-    // : [Chip]
     CurrentRow extends [infer First extends TicTacToeCell, ...infer Rest extends string[]]
     ? Memory['length'] extends X ? PlaceChipAtX<Rest, X, Chip, [...Memory, Chip]> : PlaceChipAtX<Rest, X, Chip, [...Memory, First]>
     : Memory
