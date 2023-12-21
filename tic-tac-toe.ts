@@ -63,6 +63,18 @@ type TestBoard3 = [
     ['⭕', '  ', '❌']
 ]
 
+type TestBoard4 = [
+    ['⭕', '❌', '⭕'],
+    ['⭕', '❌', '❌'],
+    ['❌', '⭕', '⭕']
+]
+
+type TestBoard5 = [
+    ['⭕', '❌', '  '],
+    ['  ', '❌', '  '],
+    ['⭕', '❌', '  ']
+]
+
 type Row = [TicTacToeCell, TicTacToeCell, TicTacToeCell]
 
 type GameInProgressBoard = [
@@ -126,10 +138,20 @@ type Test2FlipGameState = FlipGameState<'❌'>
 type Test3FlipGameState = FlipGameState<NewGame['state']>
 
 
-type CheckRowsWin<Board extends TicTacToeCell[][]> =
+type CheckRowsWin<Board> =
     Board extends [infer First extends TicTacToeCell[], ...infer Rest extends TicTacToeCell[][]]
-    ? Unique<First>['length'] extends 1 ? First[0] : CheckRowsWin<Rest>
-    : never
+    ? First[number] extends "  " ? CheckRowsWin<Rest>
+    : Unique<First>['length'] extends 1 ? `${First[0]} Won` : CheckRowsWin<Rest>
+    : void
+
+type CheckRowsForDraw<Board> =
+    Board extends [infer First extends TicTacToeCell[], ...infer Rest extends TicTacToeCell[][]]
+    ? "  " extends First[number] ? void
+    : CheckRowsForDraw<Rest>
+    : 'Draw'
+
+type Test1CheckRowsForDraw = CheckRowsForDraw<TestBoard4>
+type Test2CheckRowsForDraw = CheckRowsForDraw<TestBoard3>
 
 type CheckWin<Board extends GameInProgressBoard> = CheckRowsWin<Board>;
 
@@ -143,18 +165,55 @@ type TransposeTest1 = Transpose<TestBoard2>
 // ['⭕', '  ', '❌']
 type TransposeTest2 = Transpose<TestBoard3>
 
+// ['⭕', '❌', '  '],
+// ['  ', '❌', '  '],
+// ['⭕', '❌', '  ']
+type TransposeTest3 = Transpose<TestBoard5>
+
 type Test1CheckWin = CheckWin<TestBoard3>
 type Test2CheckWin = CheckWin<TestBoard2>
 
-type TicTacToe<CurrentGame extends Game, Positions extends TicTacToePositions> = {
-    board: PlaceChipAtPosition<CurrentGame['board'], Positions, CurrentGame['state']>,
-    state: FlipGameState<CurrentGame['state']>
+type CheckForWin<CurrentGame> = CurrentGame extends string[][] ? CheckRowsWin<Transpose<CurrentGame>> : never;
+type CheckForDraw<CurrentGame> = CurrentGame extends string[][]
+    ? CheckRowsForDraw<CurrentGame>
+    : void
+
+type CheckForWinTest1 = CheckForWin<TestBoard5>
+
+type CalculateState<Result, GameState extends Game['state']> =
+    CheckForWin<Result> extends string
+    ? CheckForWin<Result>
+    : CheckForDraw<Result> extends string
+    ? CheckForDraw<Result>
+    : FlipGameState<GameState>
+
+type TicTacToe<CurrentGame extends Game, Positions extends TicTacToePositions, Result extends PlaceChipAtPosition<CurrentGame['board'], Positions, CurrentGame['state']> = PlaceChipAtPosition<CurrentGame['board'], Positions, CurrentGame['state']>> = {
+    board: Result,
+    state: CalculateState<Result, CurrentGame['state']>
 };
 
 //     ['⭕', '❌', '  '],
 //     ['⭕', '❌', '  '],
 //     ['  ', '⭕', '  ']
-type TestTicTacToe1 = TicTacToe<TestGame1, 'bottom-right'>
+
+
+type TestTicTacToe1 = TicTacToe<{
+    board: [
+        ['⭕', '❌', '  '],
+        ['  ', '❌', '  '],
+        ['  ', '  ', '  ']
+    ];
+    state: '⭕';
+}, 'bottom-left'>
+
+type TestTicTacToe2 = TicTacToe<{
+    board: [
+        ['⭕', '❌', '  '],
+        ['  ', '❌', '  '],
+        ['⭕', '  ', '  ']
+    ];
+    state: '❌';
+}, 'bottom-center'>
 
 
 type test_move1_actual = TicTacToe<NewGame, 'top-center'>;
