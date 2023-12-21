@@ -27,13 +27,13 @@ type EmptyBoard = [
 type TestBoard1 = [
     ['⭕', '❌', '  '],
     ['⭕', '❌', '  '],
-    ['⭕', '  ', '❌']
+    ['  ', '⭕', '  ']
 ]
 
+type Row = [TicTacToeCell, TicTacToeCell, TicTacToeCell]
+
 type GameInProgressBoard = [
-    [TicTacToeCell, TicTacToeCell, TicTacToeCell],
-    [TicTacToeCell, TicTacToeCell, TicTacToeCell],
-    [TicTacToeCell, TicTacToeCell, TicTacToeCell]
+    Row, Row, Row,
 ]
 
 type Game = {
@@ -68,22 +68,34 @@ type GetCoords<T extends TicTacToePositions> =
 type GetCoordsTest1 = GetCoords<'top-left'>
 type GetCoordsTest2 = GetCoords<'bottom-center'>
 
+
+type PlaceChipAtX<CurrentRow extends string[], X extends number, Chip extends TicTacToeChip, Memory extends string[] = []> =
+    // CurrentRow extends [infer First extends TicTacToeChip, ...infer Rest extends Row]
+    // ? PlaceChipAtX<Rest, X, Chip, [...Memory, First]> 
+    // : [Chip]
+    CurrentRow extends [infer First extends TicTacToeCell, ...infer Rest extends string[]]
+    ? Memory['length'] extends X ? PlaceChipAtX<Rest, X, Chip, [...Memory, Chip]> : PlaceChipAtX<Rest, X, Chip, [...Memory, First]>
+    : Memory
+
 type PlaceChipAtPosition<Board extends GameInProgressBoard,
     Positions extends TicTacToePositions,
+    Chip extends TicTacToeChip,
     Coords extends GetCoords<Positions> = GetCoords<Positions>,
     Memory extends string[][] = []>
     = Memory['length'] extends Board['length']
     ? Memory
     : Coords['y'] extends Memory['length']
-    ? PlaceChipAtPosition<Board, Positions, Coords, [...Memory, ['here']]>
-    : PlaceChipAtPosition<Board, Positions, Coords, [...Memory, Board[Memory['length']]]>;
+    ? PlaceChipAtPosition<Board, Positions, Chip, Coords, [...Memory, PlaceChipAtX<Board[Memory['length']], Coords['x'], Chip>]>
+    : PlaceChipAtPosition<Board, Positions, Chip, Coords, [...Memory, Board[Memory['length']]]>;
 
 
-type TicTacToe<CurrentGame extends Game, Positions extends TicTacToePositions> = PlaceChipAtPosition<CurrentGame['board'], Positions>;
+type TicTacToe<CurrentGame extends Game, Positions extends TicTacToePositions> =
+    PlaceChipAtPosition<CurrentGame['board'], Positions, CurrentGame['state']>;
 
+//     ['⭕', '❌', '  '],
+//     ['⭕', '❌', '  '],
+//     ['  ', '⭕', '  ']
 type TestTicTacToe1 = TicTacToe<TestGame1, 'bottom-right'>
-
-
 
 
 type test_move1_actual = TicTacToe<NewGame, 'top-center'>;
