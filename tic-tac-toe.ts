@@ -86,8 +86,16 @@ type PlaceChipAtPosition<Board extends GameInProgressBoard,
     : PlaceChipAtPosition<Board, Positions, Chip, Coords, [...Memory, Board[Memory['length']]]>;
 
 
-type TicTacToe<CurrentGame extends Game, Positions extends TicTacToePositions> =
-    PlaceChipAtPosition<CurrentGame['board'], Positions, CurrentGame['state']>;
+type FlipGameState<CurrentState extends TicTacToeChip> = CurrentState extends '⭕' ? '❌' : '⭕';
+
+type Test1FlipGameState = FlipGameState<'⭕'>
+type Test2FlipGameState = FlipGameState<'❌'>
+type Test3FlipGameState = FlipGameState<NewGame['state']>
+
+type TicTacToe<CurrentGame extends Game, Positions extends TicTacToePositions> = {
+    board: PlaceChipAtPosition<CurrentGame['board'], Positions, CurrentGame['state']>,
+    state: FlipGameState<CurrentGame['state']>
+};
 
 //     ['⭕', '❌', '  '],
 //     ['⭕', '❌', '  '],
