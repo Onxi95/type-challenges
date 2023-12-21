@@ -138,6 +138,11 @@ type CheckWin<Board extends GameInProgressBoard> = CheckRowsWin<Board>;
 // ['⭕', '  ', '❌']
 type TransposeTest1 = Transpose<TestBoard2>
 
+// ['❌', '❌', '❌'],
+// ['⭕', '❌', '  '],
+// ['⭕', '  ', '❌']
+type TransposeTest2 = Transpose<TestBoard3>
+
 type Test1CheckWin = CheckWin<TestBoard3>
 type Test2CheckWin = CheckWin<TestBoard2>
 
