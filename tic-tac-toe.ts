@@ -1,5 +1,8 @@
-export type Expect<T extends true> = T
-export type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2
+// Advent of TypeScript 2023
+// https://typehero.dev/challenge/day-21
+
+type Expect<T extends true> = T
+type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2
     ? true
     : false
 
@@ -21,8 +24,6 @@ type Transpose<T extends unknown[][], U = T['length'] extends 0 ? [] : T[0]> = {
         [Y in keyof T]: X extends keyof T[Y] ? T[Y][X] : never
     }
 }
-
-
 
 type TicTacToeChip = '❌' | '⭕';
 type TicTacToeEndState = '❌ Won' | '⭕ Won' | 'Draw';
@@ -130,6 +131,13 @@ type PlaceChipAtPosition<Board extends GameInProgressBoard,
     ? PlaceChipAtPosition<Board, Positions, Chip, Coords, [...Memory, PlaceChipAtX<Board[Memory['length']], Coords['x'], Chip>]>
     : PlaceChipAtPosition<Board, Positions, Chip, Coords, [...Memory, Board[Memory['length']]]>;
 
+type CanPlaceChipAtPosition<Board extends GameInProgressBoard,
+    Positions extends TicTacToePositions,
+    Coords extends GetCoords<Positions> = GetCoords<Positions>>
+    = Board[Coords['y']][Coords['x']] extends TicTacToeEmptyCell ? true : false;
+
+type CanPlaceChipAtPositionTest1 = CanPlaceChipAtPosition<TestBoard4, 'bottom-left'>
+type CanPlaceChipAtPositionTest2 = CanPlaceChipAtPosition<TestBoard5, 'bottom-right'>
 
 type FlipGameState<CurrentState extends TicTacToeChip> = CurrentState extends '⭕' ? '❌' : '⭕';
 
@@ -187,10 +195,17 @@ type CalculateState<Result, GameState extends Game['state']> =
     ? CheckForDraw<Result>
     : FlipGameState<GameState>
 
-type TicTacToe<CurrentGame extends Game, Positions extends TicTacToePositions, Result extends PlaceChipAtPosition<CurrentGame['board'], Positions, CurrentGame['state']> = PlaceChipAtPosition<CurrentGame['board'], Positions, CurrentGame['state']>> = {
-    board: Result,
-    state: CalculateState<Result, CurrentGame['state']>
-};
+type TicTacToe<
+    CurrentGame extends Game,
+    Positions extends TicTacToePositions,
+    Result extends PlaceChipAtPosition<CurrentGame['board'], Positions, CurrentGame['state']>
+    = PlaceChipAtPosition<CurrentGame['board'], Positions, CurrentGame['state']>> =
+    CanPlaceChipAtPosition<CurrentGame['board'], Positions> extends true ?
+    {
+        board: Result,
+        state: CalculateState<Result, CurrentGame['state']>
+    }
+    : CurrentGame
 
 //     ['⭕', '❌', '  '],
 //     ['⭕', '❌', '  '],
@@ -214,6 +229,16 @@ type TestTicTacToe2 = TicTacToe<{
     ];
     state: '❌';
 }, 'bottom-center'>
+
+
+type TestTicTacToe3 = TicTacToe<{
+    board: [
+        ['  ', '❌', '  '],
+        ['  ', '  ', '  '],
+        ['  ', '  ', '  ']
+    ];
+    state: '⭕';
+}, 'top-center'>
 
 
 type test_move1_actual = TicTacToe<NewGame, 'top-center'>;
