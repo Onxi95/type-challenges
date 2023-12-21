@@ -3,6 +3,27 @@ export type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T exte
     ? true
     : false
 
+type Includes<T, U> = U extends [infer First, ...infer Rest]
+    ? Equal<First, T> extends true
+    ? true
+    : Includes<T, Rest>
+    : false;
+
+type Unique<T, U extends any[] = []> =
+    T extends [infer First, ...infer Rest]
+    ? Includes<First, U> extends true
+    ? Unique<Rest, [...U]>
+    : Unique<Rest, [...U, First]>
+    : U
+
+type Transpose<T extends unknown[][], U = T['length'] extends 0 ? [] : T[0]> = {
+    [X in keyof U]: {
+        [Y in keyof T]: X extends keyof T[Y] ? T[Y][X] : never
+    }
+}
+
+
+
 type TicTacToeChip = '❌' | '⭕';
 type TicTacToeEndState = '❌ Won' | '⭕ Won' | 'Draw';
 type TicTacToeState = TicTacToeChip | TicTacToeEndState;
@@ -28,6 +49,18 @@ type TestBoard1 = [
     ['⭕', '❌', '  '],
     ['⭕', '❌', '  '],
     ['  ', '⭕', '  ']
+]
+
+type TestBoard2 = [
+    ['⭕', '❌', '  '],
+    ['⭕', '❌', '  '],
+    ['⭕', '  ', '❌']
+]
+
+type TestBoard3 = [
+    ['❌', '❌', '❌'],
+    ['⭕', '❌', '  '],
+    ['⭕', '  ', '❌']
 ]
 
 type Row = [TicTacToeCell, TicTacToeCell, TicTacToeCell]
@@ -91,6 +124,22 @@ type FlipGameState<CurrentState extends TicTacToeChip> = CurrentState extends '�
 type Test1FlipGameState = FlipGameState<'⭕'>
 type Test2FlipGameState = FlipGameState<'❌'>
 type Test3FlipGameState = FlipGameState<NewGame['state']>
+
+
+type CheckRowsWin<Board extends TicTacToeCell[][]> =
+    Board extends [infer First extends TicTacToeCell[], ...infer Rest extends TicTacToeCell[][]]
+    ? Unique<First>['length'] extends 1 ? First[0] : CheckRowsWin<Rest>
+    : never
+
+type CheckWin<Board extends GameInProgressBoard> = CheckRowsWin<Board>;
+
+// ['⭕', '❌', '  '],
+// ['⭕', '❌', '  '],
+// ['⭕', '  ', '❌']
+type TransposeTest1 = Transpose<TestBoard2>
+
+type Test1CheckWin = CheckWin<TestBoard3>
+type Test2CheckWin = CheckWin<TestBoard2>
 
 type TicTacToe<CurrentGame extends Game, Positions extends TicTacToePositions> = {
     board: PlaceChipAtPosition<CurrentGame['board'], Positions, CurrentGame['state']>,
