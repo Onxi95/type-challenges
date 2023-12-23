@@ -131,7 +131,7 @@ type CheckRowWin<
   ? First extends CurrentChip
   ? CheckRowWin<Rest, First, [...Count, First]>
   : CheckRowWin<Rest, First, [First]>
-  : never;
+  : void;
 
 type CheckRowWinTest1 = CheckRowWin<["🔴", "🔴", "🔴", "🔴", "  ", "  ", "  "]>
 type CheckRowWinTest2 = CheckRowWin<["🔴", "🟡", "🔴", "🔴", "  ", "  ", "  "]>
@@ -139,12 +139,63 @@ type CheckRowWinTest3 = CheckRowWin<["  ", "  ", "🟡", "🟡", "🟡", "🟡",
 type CheckRowWinTest4 = CheckRowWin<["  ", "  ", "  ", "🟡", "🟡", "🟡", "🟡"]>
 type CheckRowWinTest5 = CheckRowWin<["🟡", "🟡", "🔴", "🔴", "🔴", "🔴", "🟡"]>
 
-type Connect4<CurrentGame extends Game, Column extends number> = {
-  board: FillChipInColumn<CurrentGame["board"], Column, CurrentGame["state"]>;
-  state: FlipGameState<CurrentGame["state"]>;
+type CheckHorizontalWin<CurrentBoard extends GameBoard> =
+ CurrentBoard extends [infer First extends Connect4Cell[], ...infer Rest extends Connect4Cell[][]]
+  ? CheckRowWin<First> extends Connect4Chips
+  ? `${CheckRowWin<First>} Won`
+  : CheckHorizontalWin<Rest>
+  : void;
+
+type CheckHorizontalWinTest1 = CheckHorizontalWin<[
+  ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
+  ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
+  ["🟡", "  ", "  ", "  ", "  ", "  ", "  "],
+  ["🟡", "  ", "  ", "  ", "  ", "  ", "  "],
+  ["🔴", "🔴", "🔴", "🔴", "  ", "  ", "  "],
+  ["🟡", "🔴", "🟡", "🟡", "  ", "  ", "  "]
+]>
+
+type CheckHorizontalWinTest2 = CheckHorizontalWin<[
+  ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
+  ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
+  ["🟡", "  ", "  ", "🔴", "🔴", "🔴", "🔴"],
+  ["🟡", "  ", "  ", "  ", "  ", "  ", "  "],
+  ["🟡", "🔴", "🔴", "🔴", "  ", "  ", "  "],
+  ["🟡", "🔴", "🟡", "🟡", "  ", "  ", "  "]
+]>
+
+type CheckForWin<CurrentBoard extends GameBoard, Transposed extends GameBoard = Transpose<GameBoard>> =
+  CheckHorizontalWin<CurrentBoard> extends string
+  ? CheckHorizontalWin<CurrentBoard>
+  : CheckHorizontalWin<Transposed> extends string
+  ? CheckHorizontalWin<Transposed>
+  : void;
+
+type CalculateState<CurrentBoard, CurrentState extends Connect4Chips> = 
+CurrentBoard extends GameBoard
+ ? CheckForWin<CurrentBoard> extends string
+ ? CheckForWin<CurrentBoard> 
+ : FlipGameState<CurrentState>
+ : void;
+
+type Connect4<CurrentGame extends Game, Column extends number, NextBoard = FillChipInColumn<CurrentGame["board"], Column, CurrentGame["state"]>> = {
+  board: NextBoard;
+  state: CalculateState<NextBoard, CurrentGame['state']>;
 };
 
 type Connect4Test1 = Connect4<NewGame1, 0>;
+type Connect4Test2 = Connect4<
+  {
+    board: [
+      ["🟡", "  ", "  ", "  ", "  ", "  ", "  "],
+      ["🟡", "  ", "  ", "  ", "  ", "  ", "  "],
+      ["🔴", "🔴", "🔴", "  ", "  ", "  ", "  "],
+      ["🟡", "🔴", "🟡", "🟡", "  ", "  ", "  "]
+    ];
+    state: "🔴";
+  },
+  3
+>['state'];
 
 type test_move1_actual = Connect4<NewGame, 0>;
 //   ^?
