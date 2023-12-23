@@ -122,6 +122,23 @@ type FillChipInColumn<
       [...Memory, TransposedBoard[Memory["length"]]]
     >;
 
+type CheckRowWin<
+  Row extends Connect4Cell[],
+  CurrentChip extends Connect4Cell = Row[0],
+  Count extends any[] = []
+> = Count['length'] extends 4 ? CurrentChip :
+  Row extends [infer First extends Connect4Cell, ...infer Rest extends Connect4Cell[]]
+  ? First extends CurrentChip
+  ? CheckRowWin<Rest, First, [...Count, First]>
+  : CheckRowWin<Rest, First, [First]>
+  : never;
+
+type CheckRowWinTest1 = CheckRowWin<["🔴", "🔴", "🔴", "🔴", "  ", "  ", "  "]>
+type CheckRowWinTest2 = CheckRowWin<["🔴", "🟡", "🔴", "🔴", "  ", "  ", "  "]>
+type CheckRowWinTest3 = CheckRowWin<["  ", "  ", "🟡", "🟡", "🟡", "🟡", "  "]>
+type CheckRowWinTest4 = CheckRowWin<["  ", "  ", "  ", "🟡", "🟡", "🟡", "🟡"]>
+type CheckRowWinTest5 = CheckRowWin<["🟡", "🟡", "🔴", "🔴", "🔴", "🔴", "🟡"]>
+
 type Connect4<CurrentGame extends Game, Column extends number> = {
   board: FillChipInColumn<CurrentGame["board"], Column, CurrentGame["state"]>;
   state: FlipGameState<CurrentGame["state"]>;
