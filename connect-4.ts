@@ -33,7 +33,7 @@ type GameBoard = Connect4Cell[][];
 
 type EmptyBoard = [
   ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
-  ["  ", "  ", "  ", "  ", "  ", "  ", "  "]
+  ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
   ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
   ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
   ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
@@ -41,9 +41,9 @@ type EmptyBoard = [
 ];
 
 type EmptyBoard1 = [
-  ["  ", "  ",],
-  ["🔴", "  ",],
-  ["🟡", "  ",]
+  ["  ", "  "],
+  ["🔴", "  "],
+  ["🟡", "  "]
   // ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
   // ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
   // ["  ", "  ", "  ", "  ", "  ", "  ", "  "]
@@ -60,9 +60,9 @@ type NewGame = {
 };
 
 type NewGame1 = {
-  board: EmptyBoard1,
+  board: EmptyBoard1;
   state: "🟡";
-}
+};
 
 type PlaceChipAtEndIfEmpty<
   Row extends Connect4Cell[],
@@ -126,71 +126,151 @@ type CheckRowWin<
   Row extends Connect4Cell[],
   CurrentChip extends Connect4Cell = Row[0],
   Count extends any[] = []
-> = Count['length'] extends 4 ? CurrentChip :
-  Row extends [infer First extends Connect4Cell, ...infer Rest extends Connect4Cell[]]
+> = Count["length"] extends 4
+  ? CurrentChip
+  : Row extends [
+      infer First extends Connect4Cell,
+      ...infer Rest extends Connect4Cell[]
+    ]
   ? First extends CurrentChip
-  ? CheckRowWin<Rest, First, [...Count, First]>
-  : CheckRowWin<Rest, First, [First]>
+    ? CheckRowWin<Rest, First, [...Count, First]>
+    : CheckRowWin<Rest, First, [First]>
   : void;
 
-type CheckRowWinTest1 = CheckRowWin<["🔴", "🔴", "🔴", "🔴", "  ", "  ", "  "]>
-type CheckRowWinTest2 = CheckRowWin<["🔴", "🟡", "🔴", "🔴", "  ", "  ", "  "]>
-type CheckRowWinTest3 = CheckRowWin<["  ", "  ", "🟡", "🟡", "🟡", "🟡", "  "]>
-type CheckRowWinTest4 = CheckRowWin<["  ", "  ", "  ", "🟡", "🟡", "🟡", "🟡"]>
-type CheckRowWinTest5 = CheckRowWin<["🟡", "🟡", "🔴", "🔴", "🔴", "🔴", "🟡"]>
+type CheckRowWinTest1 = CheckRowWin<["🔴", "🔴", "🔴", "🔴", "  ", "  ", "  "]>;
+type CheckRowWinTest2 = CheckRowWin<["🔴", "🟡", "🔴", "🔴", "  ", "  ", "  "]>;
+type CheckRowWinTest3 = CheckRowWin<["  ", "  ", "🟡", "🟡", "🟡", "🟡", "  "]>;
+type CheckRowWinTest4 = CheckRowWin<["  ", "  ", "  ", "🟡", "🟡", "🟡", "🟡"]>;
+type CheckRowWinTest5 = CheckRowWin<["🟡", "🟡", "🔴", "🔴", "🔴", "🔴", "🟡"]>;
 
-type CheckHorizontalWin<CurrentBoard extends GameBoard> =
- CurrentBoard extends [infer First extends Connect4Cell[], ...infer Rest extends Connect4Cell[][]]
+type CheckHorizontalWin<CurrentBoard extends GameBoard> = CurrentBoard extends [
+  infer First extends Connect4Cell[],
+  ...infer Rest extends Connect4Cell[][]
+]
   ? CheckRowWin<First> extends Connect4Chips
-  ? `${CheckRowWin<First>} Won`
-  : CheckHorizontalWin<Rest>
+    ? `${CheckRowWin<First>} Won`
+    : CheckHorizontalWin<Rest>
   : void;
 
-type CheckHorizontalWinTest1 = CheckHorizontalWin<[
-  ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
-  ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
-  ["🟡", "  ", "  ", "  ", "  ", "  ", "  "],
-  ["🟡", "  ", "  ", "  ", "  ", "  ", "  "],
-  ["🔴", "🔴", "🔴", "🔴", "  ", "  ", "  "],
-  ["🟡", "🔴", "🟡", "🟡", "  ", "  ", "  "]
-]>
+type CheckHorizontalWinTest1 = CheckHorizontalWin<
+  [
+    ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
+    ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
+    ["🟡", "  ", "  ", "  ", "  ", "  ", "  "],
+    ["🟡", "  ", "  ", "  ", "  ", "  ", "  "],
+    ["🔴", "🔴", "🔴", "🔴", "  ", "  ", "  "],
+    ["🟡", "🔴", "🟡", "🟡", "  ", "  ", "  "]
+  ]
+>;
 
-type CheckHorizontalWinTest2 = CheckHorizontalWin<[
-  ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
-  ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
-  ["🟡", "  ", "  ", "🔴", "🔴", "🔴", "🔴"],
-  ["🟡", "  ", "  ", "  ", "  ", "  ", "  "],
-  ["🟡", "🔴", "🔴", "🔴", "  ", "  ", "  "],
-  ["🟡", "🔴", "🟡", "🟡", "  ", "  ", "  "]
-]>
+type CheckHorizontalWinTest2 = CheckHorizontalWin<
+  [
+    ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
+    ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
+    ["🟡", "  ", "  ", "🔴", "🔴", "🔴", "🔴"],
+    ["🟡", "  ", "  ", "  ", "  ", "  ", "  "],
+    ["🟡", "🔴", "🔴", "🔴", "  ", "  ", "  "],
+    ["🟡", "🔴", "🟡", "🟡", "  ", "  ", "  "]
+  ]
+>;
 
-type CheckForWin<CurrentBoard extends GameBoard, Transposed extends GameBoard = Transpose<GameBoard>> =
-  CheckHorizontalWin<CurrentBoard> extends string
+type DiagonalWinBoard = [
+  ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
+  ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
+  ["  ", "  ", "  ", "🟡", "  ", "  ", "  "],
+  ["  ", "  ", "🟡", "🔴", "  ", "  ", "  "],
+  ["🔴", "🟡", "🔴", "🔴", "  ", "  ", "  "],
+  ["🟡", "🔴", "🟡", "🟡", "  ", "  ", "  "]
+];
+
+type DiagonalTransform<Board extends GameBoard> = [
+  // I give up, it's time to do some Nest JS :P
+  [
+    Board[0][0],
+    Board[1][1],
+    Board[2][2],
+    Board[3][3],
+    Board[4][4],
+    Board[5][5]
+  ],
+  [
+    Board[0][1],
+    Board[1][2],
+    Board[2][3],
+    Board[3][4],
+    Board[4][5],
+    Board[5][6]
+  ],
+  [Board[0][2], Board[1][3], Board[2][4], Board[3][5], Board[4][6]],
+  [Board[0][3], Board[1][4], Board[2][5], Board[3][6]],
+  [Board[0][3], Board[1][2], Board[2][1], Board[3][0]],
+  [Board[0][4], Board[1][3], Board[2][2], Board[3][1], Board[4][0]],
+  [
+    Board[0][5],
+    Board[1][4],
+    Board[2][3],
+    Board[3][2],
+    Board[4][1],
+    Board[5][0]
+  ],
+  [Board[0][6], Board[1][5], Board[2][4], Board[3][3], Board[4][2], Board[5][1]]
+];
+
+type DiagonalTest1 = CheckHorizontalWin<
+  DiagonalTransform<
+    [
+      ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
+      ["  ", "  ", "  ", "  ", "  ", "  ", "  "],
+      ["  ", "  ", "  ", "🟡", "  ", "  ", "  "],
+      ["  ", "  ", "🟡", "🔴", "  ", "  ", "  "],
+      ["🔴", "🟡", "🔴", "🔴", "  ", "  ", "  "],
+      ["🟡", "🔴", "🟡", "🟡", "  ", "  ", "  "]
+    ]
+  >
+>;
+
+type CheckForWin<
+  CurrentBoard extends GameBoard,
+  Transposed extends GameBoard = Transpose<GameBoard>
+> = CheckHorizontalWin<CurrentBoard> extends string
   ? CheckHorizontalWin<CurrentBoard>
   : CheckHorizontalWin<Transposed> extends string
   ? CheckHorizontalWin<Transposed>
+  : CheckHorizontalWin<DiagonalTransform<CurrentBoard>> extends string
+  ? CheckHorizontalWin<DiagonalTransform<CurrentBoard>>
   : void;
 
+type CheckRowsForDraw<Board extends GameBoard> = Board extends [
+  infer First extends Connect4Cell[],
+  ...infer Rest extends Connect4Cell[][]
+]
+  ? "  " extends First[number]
+    ? void
+    : CheckRowsForDraw<Rest>
+  : "Draw";
 
-
-type CheckRowsForDraw<Board extends GameBoard> =
-  Board extends [infer First extends Connect4Cell[], ...infer Rest extends Connect4Cell[][]]
-  ? "  " extends First[number] ? void
-  : CheckRowsForDraw<Rest>
-  : 'Draw'
-
-type CalculateState<CurrentBoard, CurrentState extends Connect4Chips> = 
-CurrentBoard extends GameBoard
+type CalculateState<
+  CurrentBoard,
+  CurrentState extends Connect4Chips
+> = CurrentBoard extends GameBoard
   ? CheckForWin<CurrentBoard> extends string
-  ? CheckForWin<CurrentBoard> 
-  : CheckForDraw<CurrentBoard> extends string
-  ? CheckForDraw<CurrentBoard> 
-  : FlipGameState<CurrentState>
+    ? CheckForWin<CurrentBoard>
+    : CheckRowsForDraw<CurrentBoard> extends string
+    ? CheckRowsForDraw<CurrentBoard>
+    : FlipGameState<CurrentState>
   : never;
 
-type Connect4<CurrentGame extends Game, Column extends number, NextBoard = FillChipInColumn<CurrentGame["board"], Column, CurrentGame["state"]>> = {
+type Connect4<
+  CurrentGame extends Game,
+  Column extends number,
+  NextBoard = FillChipInColumn<
+    CurrentGame["board"],
+    Column,
+    CurrentGame["state"]
+  >
+> = {
   board: NextBoard;
-  state: CalculateState<NextBoard, CurrentGame['state']>;
+  state: CalculateState<NextBoard, CurrentGame["state"]>;
 };
 
 type Connect4Test1 = Connect4<NewGame1, 0>;
@@ -205,7 +285,7 @@ type Connect4Test2 = Connect4<
     state: "🔴";
   },
   3
->['state'];
+>["state"];
 
 type test_move1_actual = Connect4<NewGame, 0>;
 //   ^?
