@@ -171,12 +171,22 @@ type CheckForWin<CurrentBoard extends GameBoard, Transposed extends GameBoard = 
   ? CheckHorizontalWin<Transposed>
   : void;
 
+
+
+type CheckRowsForDraw<Board extends GameBoard> =
+  Board extends [infer First extends Connect4Cell[], ...infer Rest extends Connect4Cell[][]]
+  ? "  " extends First[number] ? void
+  : CheckRowsForDraw<Rest>
+  : 'Draw'
+
 type CalculateState<CurrentBoard, CurrentState extends Connect4Chips> = 
 CurrentBoard extends GameBoard
- ? CheckForWin<CurrentBoard> extends string
- ? CheckForWin<CurrentBoard> 
- : FlipGameState<CurrentState>
- : void;
+  ? CheckForWin<CurrentBoard> extends string
+  ? CheckForWin<CurrentBoard> 
+  : CheckForDraw<CurrentBoard> extends string
+  ? CheckForDraw<CurrentBoard> 
+  : FlipGameState<CurrentState>
+  : never;
 
 type Connect4<CurrentGame extends Game, Column extends number, NextBoard = FillChipInColumn<CurrentGame["board"], Column, CurrentGame["state"]>> = {
   board: NextBoard;
