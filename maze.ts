@@ -35,7 +35,7 @@ type MinusOne<Index extends MatrixSize> = [
   7,
   8
 ][Index];
-
+type Coords = { x: MatrixSize; y: MatrixSize };
 type CoordsMap<
   Direction extends Directions,
   X extends MatrixSize,
@@ -94,24 +94,43 @@ type MoveHorizontally<
       >
   : Memory;
 
+type ClearSanta<
+  CurrentRow extends Row,
+  Memory extends Row = []
+> = CurrentRow extends [infer First extends MazeItem, ...infer Rest extends Row]
+  ? ClearSanta<Rest, [...Memory, First extends "🎅" ? "  " : First]>
+  : Memory;
+
 type MoveHorizontallyTest1 = MoveHorizontally<
   ["🎄", "  ", "🎅", "  ", "🎄"],
   3
 >;
 
+type MoveRows<
+  Maze extends MazeMatrix,
+  CurrentCoords extends Coords,
+  Direction extends Directions,
+  Memory extends MazeMatrix = []
+> = Maze extends [infer First extends Row, ...infer Rest extends Row[]]
+  ? Memory["length"] extends CurrentCoords["y"]
+    ? MoveRows<
+        Rest,
+        CurrentCoords,
+        Direction,
+        [...Memory, MoveHorizontally<First, CurrentCoords["x"]>]
+      >
+    : MoveRows<Rest, CurrentCoords, Direction, [...Memory, ClearSanta<First>]>
+  : Memory;
+
 type Move<
   Maze extends MazeMatrix,
   Direction extends Directions,
-  Coords extends { x: MatrixSize; y: MatrixSize } = CoordsMap<
+  CurrentCoords extends Coords = CoordsMap<
     Direction,
     FindSanta<Maze0>["x"],
     FindSanta<Maze0>["y"]
   >
-> = Maze[Coords["y"]][Coords["x"]] extends "🎄"
-  ? Maze
-  : Direction extends "up" | "down"
-  ? Move<Maze, "left">
-  : Move<Maze, "up" | "down">;
+> = Maze[CurrentCoords["y"]][CurrentCoords["x"]] extends "🎄" ? Maze : never;
 
 // can't move up!
 type test_maze0_up_actual = Move<Maze0, "up">;
