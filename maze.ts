@@ -8,6 +8,12 @@ type Equal<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y
   ? true
   : false;
 
+type Transpose<T extends unknown[][], U = T["length"] extends 0 ? [] : T[0]> = {
+  [X in keyof U]: {
+    [Y in keyof T]: X extends keyof T[Y] ? T[Y][X] : never;
+  };
+};
+
 type Alley = "  ";
 type MazeItem = "🎄" | "🎅" | Alley;
 type Row = MazeItem[];
@@ -74,6 +80,25 @@ type FindSantaTest2 = CoordsMap<
   FindSanta<Maze0>["y"]
 >;
 
+type MoveHorizontally<
+  CurrentRow extends Row,
+  Index extends MatrixSize,
+  Memory extends Row = []
+> = CurrentRow extends [infer First extends MazeItem, ...infer Rest extends Row]
+  ? Memory["length"] extends Index
+    ? MoveHorizontally<Rest, Index, [...Memory, "🎅"]>
+    : MoveHorizontally<
+        Rest,
+        Index,
+        [...Memory, First extends "🎅" ? "  " : First]
+      >
+  : Memory;
+
+type MoveHorizontallyTest1 = MoveHorizontally<
+  ["🎄", "  ", "🎅", "  ", "🎄"],
+  3
+>;
+
 type Move<
   Maze extends MazeMatrix,
   Direction extends Directions,
@@ -82,7 +107,11 @@ type Move<
     FindSanta<Maze0>["x"],
     FindSanta<Maze0>["y"]
   >
-> = Maze[Coords["y"]][Coords["x"]] extends "🎄" ? Maze : never;
+> = Maze[Coords["y"]][Coords["x"]] extends "🎄"
+  ? Maze
+  : Direction extends "up" | "down"
+  ? Move<Maze, "left">
+  : Move<Maze, "up" | "down">;
 
 // can't move up!
 type test_maze0_up_actual = Move<Maze0, "up">;
