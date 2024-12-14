@@ -1,5 +1,19 @@
 type NameTuple = [string, string, string];
 
+type OddNums = 1 | 3 | 5 | 7 | 9;
+type IsOdd<T extends number> = T extends OddNums
+  ? true
+  : `${T}` extends `${number}${OddNums}`
+  ? true
+  : false;
+
+type HasOddLength<
+  T,
+  Res extends any[] = []
+> = T extends `${infer _}${infer Rest}`
+  ? HasOddLength<Rest, [...Res, 0]>
+  : IsOdd<Res["length"]>;
+
 type ParseNum<T> = T extends `${infer Num extends number}` ? Num : never;
 type Recordify<T> = T extends [infer Name, infer S, infer C]
   ? {
@@ -9,7 +23,7 @@ type Recordify<T> = T extends [infer Name, infer S, infer C]
     }
   : never;
 
-type NaughtyOrNice<Name> = Name extends "Liam" | "Aala" ? "naughty" : "nice";
+type NaughtyOrNice<Name> = HasOddLength<Name> extends true ? "naughty" : "nice";
 type FormatNames<T extends NameTuple[]> = {
   [Key in keyof T]: Recordify<T[Key]>;
 };
