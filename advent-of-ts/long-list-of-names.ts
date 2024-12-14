@@ -23,7 +23,7 @@ type Recordify<T> = T extends [infer Name, infer S, infer C]
     }
   : never;
 
-type NaughtyOrNice<Name> = HasOddLength<Name> extends true ? "naughty" : "nice";
+type NaughtyOrNice<Name> = HasOddLength<Name> extends true ? "nice" : "naughty";
 type FormatNames<T extends NameTuple[]> = {
   [Key in keyof T]: Recordify<T[Key]>;
 };
